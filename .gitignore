@@ -1,3 +1,12 @@
-# Compiled files
+# Terraform
 *.tfstate
 *.tfstate.backup
+.terraform
+
+# Packer
+packer_cache
+tmp
+Packer-*/
+.DS_Store
+
+README.md

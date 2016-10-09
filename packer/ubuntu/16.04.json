@@ -1,0 +1,134 @@
+{
+  "builders": [{
+    "type": "amazon-ebs",
+    "name": "nginx-host-ami",
+    "region": "us-east-1",
+    "source_ami": "ami-2ef48339",
+    "instance_type": "t2.micro",
+    "vpc_id": "vpc-02261b65",
+    "subnet_id": "subnet-2d823164",
+    "region": "us-east-1",
+    "ssh_username": "ubuntu",
+    "ami_name": "nginx_ami_16.04_{{timestamp}}"
+  },
+  {
+  "type": "amazon-ebs",
+  "name": "haproxy-host-ami",
+  "region": "us-east-1",
+  "source_ami": "ami-2ef48339",
+  "instance_type": "t2.micro",
+  "vpc_id": "vpc-02261b65",
+  "subnet_id": "subnet-2d823164",
+  "region": "us-east-1",
+  "ssh_username": "ubuntu",
+  "ami_name": "haproxy_ami_16.04_{{timestamp}}"
+  }],
+
+  "provisioners": [
+  {
+    "type": "file",
+    "source": "files/nginx/nginx.conf",
+    "destination": "/tmp/nginx_config",
+    "only": ["nginx-host-ami"]
+  },
+  {
+    "type": "file",
+    "source": "files/nginx/sites-enabled/default",
+    "destination": "/tmp/nginx_site",
+    "only": ["nginx-host-ami"]
+  },
+  {
+    "type": "file",
+    "source": "files/ssl/certificate.pem",
+    "destination": "/tmp/ssl_cert.pem"
+  },
+  {
+    "type": "file",
+    "source": "files/dhparam.pem",
+    "destination": "/tmp/ssl_dhparam.pem"
+  },
+  {
+    "type": "file",
+    "source": "files/ssl/key.key",
+    "destination": "/tmp/ssl_key.key"
+  },
+  {
+    "type": "file",
+    "source": "files/nginx/www/index.html",
+    "destination": "/tmp/www_index.html",
+    "only": ["nginx-host-ami"]
+  },
+  {
+    "type": "file",
+    "source": "files/authorized_keys",
+    "destination": "/tmp/authorized_keys"
+  },
+  {
+    "type": "shell",
+    "pause_before": "10s",
+    "inline": [
+      "sudo mkdir -p /root/.ssh",
+      "sudo touch /root/.ssh/authorized_keys",
+      "sudo mv /tmp/authorized_keys /root/.ssh/authorized_keys",
+      "sudo chown root:root /root/.ssh/authorized_keys",
+      "echo 'deb http://apt.newrelic.com/debian/ newrelic non-free' | sudo tee --append /etc/apt/sources.list.d/newrelic.list > /dev/null",
+      "sudo wget -O- https://download.newrelic.com/548C16BF.gpg | sudo apt-key add -",
+      "sudo apt-get update",
+      "sudo apt-get -y dist-upgrade",
+      "sudo apt-get install -y python-software-properties newrelic-sysmond",
+      "sudo sed -i '/::/d' /etc/hosts",
+      "sudo timedatectl set-timezone EST",
+      "sudo nrsysmond-config --set license_key=09aa5e07cd9037246c5b378cee9f342d5d095273",
+      "sudo reboot",
+      "sleep 60"]
+  },
+  {
+    "type": "shell",
+    "pause_before": "10s",
+    "inline": [
+      "sudo add-apt-repository -yu ppa:nginx/development",
+      "sudo apt-get install -y nginx",
+      "sudo rm /var/www/html/*",
+      "sudo mv /tmp/www_index.html /var/www/html/index.html",
+      "sudo chown -R www-data:www-data /var/www",
+      "sudo mkdir /etc/nginx/ssl",
+      "sudo mv /tmp/ssl_key.key /etc/nginx/ssl/key.key",
+      "sudo mv /tmp/ssl_dhparam.pem /etc/nginx/ssl/dhparam.pem",
+      "sudo mv /tmp/ssl_cert.pem /etc/nginx/ssl/certificate.pem",
+      "sudo rm /etc/nginx/sites-available/default",
+      "sudo mv /tmp/nginx_site /etc/nginx/sites-available/default",
+      "sudo mv /tmp/nginx_config /etc/nginx/nginx.conf",
+      "sudo chown -R www-data:www-data /etc/nginx",
+      "echo 'nginx-host' |  sudo tee /etc/hostname",
+      "sudo hostname nginx-host",
+      "echo 'nginx-host 127.0.0.1' | sudo tee --append /etc/hosts"],
+      "only": ["nginx-host-ami"]
+  },
+  {
+    "type": "shell",
+    "pause_before": "10s",
+    "inline": [
+      "sudo add-apt-repository -yu ppa:vbernat/haproxy-1.6",
+      "sudo apt-get install -y haproxy",
+      "sudo mv /tmp/www_index.html /var/www/html/index.html",
+      "sudo chown -R www-data:www-data /var/www",
+      "sudo mkdir /etc/nginx/ssl",
+      "sudo mv /tmp/ssl_key.key /etc/nginx/ssl/key.key",
+      "sudo mv /tmp/ssl_dhparam.pem /etc/nginx/ssl/dhparam.pem",
+      "sudo mv /tmp/ssl_cert.pem /etc/nginx/ssl/certificate.pem",
+      "sudo rm /etc/nginx/sites-available/default",
+      "sudo mv /tmp/nginx_site /etc/nginx/sites-available/default",
+      "sudo mv /tmp/nginx_config /etc/nginx/nginx.conf",
+      "sudo chown -R www-data:www-data /etc/nginx",
+      "echo 'nginx-host' |  sudo tee /etc/hostname",
+      "sudo hostname nginx-host",
+      "echo 'nginx-host 127.0.0.1' | sudo tee --append /etc/hosts"],
+      "only": ["haproxy-host-ami"]
+  },
+  {
+    "type": "shell",
+    "inline": [
+      "sudo apt-get -y autoremove",
+      "sudo apt-get autoclean"]
+  }]
+}
