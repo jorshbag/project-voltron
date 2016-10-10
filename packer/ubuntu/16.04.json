@@ -40,23 +40,38 @@
   {
     "type": "file",
     "source": "files/ssl/certificate.pem",
-    "destination": "/tmp/ssl_cert.pem"
+    "destination": "/tmp/ssl_cert.pem",
+    "only": ["nginx-host-ami"]
   },
   {
     "type": "file",
-    "source": "files/dhparam.pem",
-    "destination": "/tmp/ssl_dhparam.pem"
+    "source": "files/ssl/dhparam.pem",
+    "destination": "/tmp/ssl_dhparam.pem",
+    "only": ["nginx-host-ami"]
+  },
+  {
+    "type": "file",
+    "source": "files/ssl/haproxy.pem",
+    "destination": "/tmp/haproxy.pem",
+    "only": ["haproxy-host-ami"]
   },
   {
     "type": "file",
     "source": "files/ssl/key.key",
-    "destination": "/tmp/ssl_key.key"
+    "destination": "/tmp/ssl_key.key",
+    "only": ["nginx-host-ami"]
   },
   {
     "type": "file",
     "source": "files/nginx/www/index.html",
     "destination": "/tmp/www_index.html",
     "only": ["nginx-host-ami"]
+  },
+  {
+    "type": "file",
+    "source": "files/haproxy/haproxy.cfg",
+    "destination": "/tmp/haproxy.cfg",
+    "only": ["haproxy-host-ami"]
   },
   {
     "type": "file",
@@ -79,8 +94,8 @@
       "sudo sed -i '/::/d' /etc/hosts",
       "sudo timedatectl set-timezone EST",
       "sudo nrsysmond-config --set license_key=09aa5e07cd9037246c5b378cee9f342d5d095273",
-      "sudo reboot",
-      "sleep 60"]
+      "sudo apt-get -y autoremove",
+      "sudo apt-get autoclean"]
   },
   {
     "type": "shell",
@@ -106,24 +121,17 @@
   },
   {
     "type": "shell",
-    "pause_before": "10s",
+    "pause_before": "5s",
     "inline": [
       "sudo add-apt-repository -yu ppa:vbernat/haproxy-1.6",
       "sudo apt-get install -y haproxy",
       "sudo mkdir /etc/haproxy/ssl",
-      "sudo mv /tmp/ssl_key.key /etc/haproxy/ssl/key.key",
-      "sudo mv /tmp/ssl_dhparam.pem /etc/ha[rpxy]/ssl/dhparam.pem",
-      "sudo mv /tmp/ssl_cert.pem /etc/haproxy/ssl/certificate.pem",
-      "sudo mv /tmp/nginx_config /etc/haproxy/haproxy.cfg",
+      "sudo mv /tmp/haproxy.pem /etc/haproxy/ssl/haproxy.pem",
+      "sudo mv /tmp/haproxy.cfg /etc/haproxy/haproxy.cfg",
+      "sudo chown -R haproxy:haproxy /etc/haproxy",
       "echo 'haproxy-host' |  sudo tee /etc/hostname",
       "sudo hostname haproxy-host",
       "echo 'haproxy-host 127.0.0.1' | sudo tee --append /etc/hosts"],
       "only": ["haproxy-host-ami"]
-  },
-  {
-    "type": "shell",
-    "inline": [
-      "sudo apt-get -y autoremove",
-      "sudo apt-get autoclean"]
   }]
 }
