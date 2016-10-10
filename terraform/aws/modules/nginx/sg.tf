@@ -1,9 +1,9 @@
 module "nginx_sg" {
   source      = "../core/sg"
-  name        = "Public-HTTP-SG"
+  name        = "Nginx-Internal-SG"
   env         = "${var.env}"
   vpc_id      = "${var.vpc_id}"
-  description = "Public HTTP/S Security Group"
+  description = "Internal HTTP/S Security Group"
 }
 
 resource "aws_security_group_rule" "nginx_sg_443" {
