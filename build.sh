@@ -3,7 +3,7 @@ set -e
 
 PACKER_BIN=$(which packer)
 TERRAFORM_BIN=$(which terraform)
-HOME=$(pwf)
+HOME=$(pwd)
 
 function packer_build () {
   AWS_PROFILE=helpscout-demo packer build -machine-readable assets/packer/ubuntu/16.04.json | awk -F, '$0 ~/artifact,0,id/ {print $6}' | sed 's/%!(PACKER_COMMA)/\n/g' > amis.txt
