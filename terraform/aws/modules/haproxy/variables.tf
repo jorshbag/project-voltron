@@ -12,11 +12,12 @@ variable "region" {}
 
 variable "vpc_cidr" {}
 
-variable "nginx_ami" {}
-
 variable "vpc_id" {}
 
-variable "app_subnets" {
+variable "dmz_subnets" {
   type = "list"
 }
-variable "route53_zone_id" {}
+
+variable "cloudflare_ip_range" {}
+
+variable "haproxy_ami" {}
