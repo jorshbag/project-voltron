@@ -13,14 +13,14 @@ module "network" {
 }
 
 module "nginx" {
-  source              = "../aws/modules/nginx"
-  env                 = "${var.env}"
-  region              = "${var.aws_region}"
-  vpc_cidr            = "${module.network.cidr}"
-  nginx_ami           = "${var.nginx_ami}"
-  app_subnets         = ["${module.network.app_subnets}"]
-  vpc_id              = "${module.network.vpc_id}"
-  route53_zone_id     = "${module.network.route53_zone_id}"
+  source          = "../aws/modules/nginx"
+  env             = "${var.env}"
+  region          = "${var.aws_region}"
+  vpc_cidr        = "${module.network.cidr}"
+  nginx_ami       = "${var.nginx_ami}"
+  app_subnets     = ["${module.network.app_subnets}"]
+  vpc_id          = "${module.network.vpc_id}"
+  route53_zone_id = "${module.network.route53_zone_id}"
 }
 
 module "haproxy" {

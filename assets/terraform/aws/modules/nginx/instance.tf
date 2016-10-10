@@ -4,7 +4,6 @@ resource "aws_instance" "nginx_node_1" {
   subnet_id              = "${var.app_subnets[0]}"
   vpc_security_group_ids = ["${module.nginx_sg.id}"]
   key_name               = "helpscout-keypair"
-  create_before_destroy  = true
 }
 
 resource "aws_instance" "nginx_node_2" {
@@ -13,7 +12,6 @@ resource "aws_instance" "nginx_node_2" {
   subnet_id              = "${var.app_subnets[1]}"
   vpc_security_group_ids = ["${module.nginx_sg.id}"]
   key_name               = "helpscout-keypair"
-  create_before_destroy  = true
 }
 
 resource "aws_route53_record" "nginx1" {
