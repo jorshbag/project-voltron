@@ -9,6 +9,7 @@ tmp
 Packer-*/
 .DS_Store
 */amis.txt
+amis.txt
 
 status
 build.sh
