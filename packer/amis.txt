@@ -1,7 +1,0 @@
-==> Builds finished. The artifacts of successful builds are:
---> nginx-host-ami: AMIs were created:
-
-us-east-1: ami-0fd99018
---> haproxy-host-ami: AMIs were created:
-
-us-east-1: ami-5ac48d4d
