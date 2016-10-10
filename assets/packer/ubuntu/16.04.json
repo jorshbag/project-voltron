@@ -27,55 +27,55 @@
   "provisioners": [
   {
     "type": "file",
-    "source": "packer/files/nginx/nginx.conf",
+    "source": "assets/packer/files/nginx/nginx.conf",
     "destination": "/tmp/nginx_config",
     "only": ["nginx-host-ami"]
   },
   {
     "type": "file",
-    "source": "packer/files/nginx/sites-enabled/default",
+    "source": "assets/packer/files/nginx/sites-enabled/default",
     "destination": "/tmp/nginx_site",
     "only": ["nginx-host-ami"]
   },
   {
     "type": "file",
-    "source": "packer/files/ssl/certificate.pem",
+    "source": "assets/packer/files/ssl/certificate.pem",
     "destination": "/tmp/ssl_cert.pem",
     "only": ["nginx-host-ami"]
   },
   {
     "type": "file",
-    "source": "packer/files/ssl/dhparam.pem",
+    "source": "assets/packer/files/ssl/dhparam.pem",
     "destination": "/tmp/ssl_dhparam.pem",
     "only": ["nginx-host-ami"]
   },
   {
     "type": "file",
-    "source": "packer/files/ssl/haproxy.pem",
+    "source": "assets/packer/files/ssl/haproxy.pem",
     "destination": "/tmp/haproxy.pem",
     "only": ["haproxy-host-ami"]
   },
   {
     "type": "file",
-    "source": "packer/files/ssl/key.key",
+    "source": "assets/packer/files/ssl/key.key",
     "destination": "/tmp/ssl_key.key",
     "only": ["nginx-host-ami"]
   },
   {
     "type": "file",
-    "source": "packer/files/nginx/www/index.html",
+    "source": "assets/packer/files/nginx/www/index.html",
     "destination": "/tmp/www_index.html",
     "only": ["nginx-host-ami"]
   },
   {
     "type": "file",
-    "source": "packer/files/haproxy/haproxy.cfg",
+    "source": "assets/packer/files/haproxy/haproxy.cfg",
     "destination": "/tmp/haproxy.cfg",
     "only": ["haproxy-host-ami"]
   },
   {
     "type": "file",
-    "source": "packer/files/authorized_keys",
+    "source": "assets/packer/files/authorized_keys",
     "destination": "/tmp/authorized_keys"
   },
   {
