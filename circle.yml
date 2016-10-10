@@ -1,12 +1,13 @@
 dependencies:
   pre:
     - wget https://releases.hashicorp.com/terraform/0.7.5/terraform_0.7.5_linux_amd64.zip
-    - unzip terraform_0.7.5_linux_amd64.zip
+    - unzip -o terraform_0.7.5_linux_amd64.zip
     - wget https://releases.hashicorp.com/packer/0.10.2/packer_0.10.2_linux_amd64.zip
-    - unzip packer_0.10.2_linux_amd64.zip
+    - unzip -o packer_0.10.2_linux_amd64.zip
 
 test:
   override:
+    - ./packer validate packer/ubuntu/16.04.json
     - ./terraform remote config -backend=S3 -backend-config="bucket=terraform-state-helpscout-demo" -backend-config="key=terraform.tfstate" -backend-config="region=us-east-1"
     - ./terraform plan -out=terraform.plan -var 'aws_credential_profile=default' -var 'nginx_ami=ami-30682027' -var 'haproxy_ami=ami-74551d63'
 
@@ -14,4 +15,5 @@ deployment:
   production:
     branch: master
     commands:
+      - ./packer validate packer/ubuntu/16.04.json
       - ./terraform plan terraform.plan -var 'aws_credential_profile=default' -var 'nginx_ami=ami-30682027' -var 'haproxy_ami=ami-74551d63'
