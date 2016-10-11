@@ -1,2 +1,2 @@
-us-east-1:ami-b66922a1
-us-east-1:ami-c8561ddf
+us-east-1:ami-eb8bc0fc
+us-east-1:ami-108bc007
