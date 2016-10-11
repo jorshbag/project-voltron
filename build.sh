@@ -3,6 +3,7 @@ set -e
 
 PACKER_BIN=$(which packer)
 TERRAFORM_BIN=$(which terraform)
+GIT_HOME=$(pwd)
 
 function packer_build () {
   AWS_PROFILE=helpscout-demo packer build -machine-readable assets/packer/ubuntu/16.04.json | awk -F, '$0 ~/artifact,0,id/ {print $6}' | sed 's/%!(PACKER_COMMA)/\n/g' > amis.txt
@@ -38,34 +39,41 @@ function get_haproxy_public_ip () {
   HAPROXY_PUBLIC_IP=$(terraform show | grep public_ip | head -1 | awk -F= '{print $2}' | sed 's/^[ \t]*//;s/[ \t]*$//')
 }
 
-echo "Beginning Phase 1: Creating AMI Assets..."
-packer_build
-echo "Phase 1 completed"
-get_haproxy_ami
-echo "HAproxy AMI ID: $HAPROXY_AMI"
-get_nginx_ami
-echo "Nginx AMI ID: $NGINX_AMI"
-read -r -p "Program is ready to execute Terraform commands against $AWS_PROFILE profile -- This is POTENTIALLY DESTRUCTIVE -- Are you sure? [y/N] " response
-if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]; then
-  echo "Beginning Phase 2: Deploying AWS Instances with created AMIs..."
-  terraform_setup
-  terraform_run $NGINX_AMI $HAPROXY_AMI
-  get_haproxy_public_ip
-  echo "Public IP for HAproxy Endpoint is $HAPROXY_PUBLIC_IP"
-  if [[ -z $CLOUDFLARE_USER || -z $CLOUDFLARE_TOKEN ]]; then
-    echo "Did not find Cloudflare credentials in Envvars.  Skipping update step. If this is a mistake, please manually update Cloudflare endpoint with the new IP: $HAPROXY_PUBLIC_IP"
-  else
-    echo "Found Cloudflare Credentials.  Updating Cloudflare Endpoint for hs.beholdthehurricane.com with new HAProxy Endpoint"
-    update_cloudflare $CLOUDFLARE_USER $CLOUDFLARE_TOKEN $HAPROXY_PUBLIC_IP
-  fi
-  echo ""
-  echo "Environment successfully created.  Confirming access to haproxy through Cloudlare"
-  sleep 10
-  curl -i https://hs.beholdthehurricane.com
-else
-  echo "Did not recieve confirmation. Aborting terraform run."
+
+if [[ -z $PACKER_BIN || -z $TERRAFORM_BIN ]]; then
+  echo "Did not find Terraform and/or Packer executables in specified paths.  Maybe you need to install them? -- http://brew.sh"
   exit 1
+else
+  echo "Beginning Phase 1: Creating AMI Assets..."
+  packer_build
+  echo "Phase 1 completed"
+  get_haproxy_ami
+  echo "HAproxy AMI ID: $HAPROXY_AMI"
+  get_nginx_ami
+  echo "Nginx AMI ID: $NGINX_AMI"
+  read -r -p "Script is ready to execute Terraform commands -- This is POTENTIALLY DESTRUCTIVE -- Are you sure? [y/N] " response
+  if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]; then
+    echo "Beginning Phase 2: Deploying AWS Instances with created AMIs..."
+    terraform_setup
+    terraform_run $NGINX_AMI $HAPROXY_AMI
+    get_haproxy_public_ip
+    echo "Public IP for HAproxy Endpoint is $HAPROXY_PUBLIC_IP"
+    if [[ -z $CLOUDFLARE_USER || -z $CLOUDFLARE_TOKEN ]]; then
+      echo "Did not find Cloudflare credentials in Envvars.  Skipping update step. If this is a mistake, please manually update Cloudflare endpoint with the new IP: $HAPROXY_PUBLIC_IP"
+    else
+      echo "Found Cloudflare Credentials.  Updating Cloudflare Endpoint for hs.beholdthehurricane.com with new HAProxy Endpoint"
+      update_cloudflare $CLOUDFLARE_USER $CLOUDFLARE_TOKEN $HAPROXY_PUBLIC_IP
+      echo ""
+      echo "Waiting 10 seconds for Cloudflare to update and confirming access."
+      sleep 10
+      curl -fi https://hs.beholdthehurricane.com
+    fi
+    echo ""
+    echo "Environment successfully created."
+  else
+    echo "Did not recieve confirmation. Aborting terraform run."
+    exit 1
+  fi
 fi
-fi
-cd $HOME
+cd $GIT_HOME
 exit 0

@@ -4,6 +4,16 @@ provider "aws" {
   max_retries = 5
 }
 
+data "terraform_remote_state" "helpscout" {
+    backend = "s3"
+    config {
+        bucket = "terraform-state-helpscout-demo"
+        key = "jsimmonds-demo/terraform.tfstate"
+        region = "us-east-1"
+        profile = "${var.aws_credential_profile}"
+    }
+}
+
 module "network" {
   source      = "../aws/modules/network"
   env         = "${var.env}"
