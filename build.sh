@@ -15,8 +15,8 @@ function terraform_setup () {
 }
 
 function terraform_run () {
-  terraform plan -var "nginx_ami=$1" -var "haproxy_ami=$2"
-  terraform apply -var "nginx_ami=$1" -var "haproxy_ami=$2"
+  terraform plan -var "nginx_ami=$1" -var "haproxy_ami=$2" -var "aws_credential_profile=$3"
+  terraform apply -var "nginx_ami=$1" -var "haproxy_ami=$2" -var "aws_credential_profile=$3"
 }
 
 function get_haproxy_ami () {
@@ -38,18 +38,15 @@ function update_cloudflare () {
 function get_haproxy_public_ip () {
   HAPROXY_PUBLIC_IP=$(terraform show | grep public_ip | head -1 | awk -F= '{print $2}' | sed 's/^[ \t]*//;s/[ \t]*$//')
 }
-  if [[ -z $PACKER_BIN || -z $TERRAFORM_BIN ]]; then
-    echo "Could not find either packer or terraform bin files in your environment. Please ensure both are installed (Homebrew is great for this -- http://brew.sh) and accessible through your shell paths"
-    exit 1
-  else
-
-    echo "Beginning Phase 1: Creating AMI Assets..."
-    packer_build
-    echo "Phase 1 completed"
-    get_haproxy_ami
-    echo "HAproxy AMI ID: $HAPROXY_AMI"
-    get_nginx_ami
-    echo "Nginx AMI ID: $NGINX_AMI"
+  echo "Beginning Phase 1: Creating AMI Assets..."
+  packer_build
+  echo "Phase 1 completed"
+  get_haproxy_ami
+  echo "HAproxy AMI ID: $HAPROXY_AMI"
+  get_nginx_ami
+  echo "Nginx AMI ID: $NGINX_AMI"
+  read -r -p "Program is ready to execute Terraform commands against $AWS_PROFILE profile -- This is POTENTIALLY DESTRUCTIVE -- Are you sure? [y/N] " response
+  if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]; then
     echo "Beginning Phase 2: Deploying AWS Instances with created AMIs..."
     terraform_setup
     terraform_run $NGINX_AMI $HAPROXY_AMI
@@ -63,6 +60,10 @@ function get_haproxy_public_ip () {
     fi
     echo "Environment successfully created.  Confirming access to haproxy through Cloudlare"
     curl -i https://hs.beholdthehurricane.com
+  else
+    echo "Did not recieve confirmation. Aborting terraform run."
+    exit 1
   fi
+fi
 cd $HOME
 exit 0

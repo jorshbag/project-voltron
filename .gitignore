@@ -2,6 +2,7 @@
 *.tfstate
 *.tfstate.backup
 .terraform
+.terraform.d
 
 # Packer
 packer_cache
@@ -10,5 +11,6 @@ Packer-*/
 .DS_Store
 */amis.txt
 amis.txt
+.packer.d
 
 status
