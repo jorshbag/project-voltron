@@ -65,6 +65,11 @@ else
     terraform_run $NGINX_AMI $HAPROXY_AMI
     get_haproxy_public_ip
     echo "Public IP for HAproxy Endpoint is $HAPROXY_PUBLIC_IP"
+    echo ""
+    echo ""
+    echo ""
+    echo "Environment successfully created! Waiting 45 seconds and confirming access"
+    sleep 45
     if [[ -z $CLOUDFLARE_USER || -z $CLOUDFLARE_TOKEN ]]; then
       echo "Did not find Cloudflare credentials in Envvars.  Skipping update step. If this is a mistake, please manually update Cloudflare endpoint with the new IP: $HAPROXY_PUBLIC_IP"
     else
@@ -72,15 +77,10 @@ else
       echo "Found Cloudflare Credentials.  Updating Cloudflare Endpoint for hs.beholdthehurricane.com with new HAProxy Endpoint"
       update_cloudflare $CLOUDFLARE_USER $CLOUDFLARE_TOKEN $HAPROXY_PUBLIC_IP
       echo ""
+      echo ""
       echo "Waiting 45 seconds for Cloudflare to update and confirming access."
-      sleep 45
       curl -fi https://hs.beholdthehurricane.com
     fi
-    echo ""
-    echo "Environment successfully created! Wawiting 45 seconds and confirming access"
-    echo ""
-    echo ""
-    sleep 45
     echo "Confirming HTTP Redirect Access"
     echo ""
     echo ""
@@ -90,7 +90,7 @@ else
     echo "Confirming HTTPS access"
     echo ""
     echo ""
-    curl -fI https://$HAPROXY_PUBLIC_IP
+    curl -fIk https://$HAPROXY_PUBLIC_IP
 # Uncomment below to add verification of terraform run. Excluding this as it adds additional action on the user's behalf, which is in violation of the stated task
 # -----
 #  else
