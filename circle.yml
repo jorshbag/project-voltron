@@ -9,9 +9,8 @@ test:
   override:
     - ./packer validate assets/packer/ubuntu/16.04.json
     - ./terraform validate assets/terraform/hs
-    - ./terraform remote config -backend=S3 -backend-config="bucket=terraform-state-helpscout-demo" -backend-config="key=terraform.tfstate" -backend-config="region=us-east-1"
     - ./terraform get assets/terraform/hs
-    - ./terraform plan -out=terraform.plan -var 'aws_credential_profile=default' -var 'nginx_ami=ami-b66922a1' -var 'haproxy_ami=ami-c8561ddf' assets/terraform/hs
+    - ./terraform plan -var 'aws_credential_profile=default' -var 'nginx_ami=ami-b66922a1' -var 'haproxy_ami=ami-c8561ddf' assets/terraform/hs
 
 deployment:
   production:
