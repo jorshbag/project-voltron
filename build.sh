@@ -78,7 +78,8 @@ else
       update_cloudflare $CLOUDFLARE_USER $CLOUDFLARE_TOKEN $HAPROXY_PUBLIC_IP
       echo ""
       echo ""
-      echo "Waiting 45 seconds for Cloudflare to update and confirming access."
+      echo "Waiting 15 seconds for Cloudflare to update and confirming access."
+      sleep 15
       curl -fi https://hs.beholdthehurricane.com
     fi
     echo "Confirming HTTP Redirect Access"
