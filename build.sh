@@ -46,16 +46,20 @@ if [[ -z $PACKER_BIN || -z $TERRAFORM_BIN ]]; then
 else
   echo "Beginning Phase 1: Creating AMI Assets..."
   packer_build
+  echo ""
   echo "Phase 1 completed"
   get_haproxy_ami
+  echo ""
   echo "HAproxy AMI ID: $HAPROXY_AMI"
   get_nginx_ami
+  echo ""
   echo "Nginx AMI ID: $NGINX_AMI"
 # Uncomment below to add verification of terraform run. Excluding this as it adds additional action on the user's behalf, which is in violation of the stated task
 # -----
 #  read -r -p "Script is ready to execute Terraform commands -- This is POTENTIALLY DESTRUCTIVE -- Are you sure? [y/N] " response
 #  if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]; then
 # -----
+    echo ""
     echo "Beginning Phase 2: Deploying AWS Instances with created AMIs..."
     terraform_setup
     terraform_run $NGINX_AMI $HAPROXY_AMI
@@ -64,6 +68,7 @@ else
     if [[ -z $CLOUDFLARE_USER || -z $CLOUDFLARE_TOKEN ]]; then
       echo "Did not find Cloudflare credentials in Envvars.  Skipping update step. If this is a mistake, please manually update Cloudflare endpoint with the new IP: $HAPROXY_PUBLIC_IP"
     else
+      echo ""
       echo "Found Cloudflare Credentials.  Updating Cloudflare Endpoint for hs.beholdthehurricane.com with new HAProxy Endpoint"
       update_cloudflare $CLOUDFLARE_USER $CLOUDFLARE_TOKEN $HAPROXY_PUBLIC_IP
       echo ""
@@ -72,7 +77,10 @@ else
       curl -fi https://hs.beholdthehurricane.com
     fi
     echo ""
-    echo "Environment successfully created. Please manually update your DNS to point to the new HAproxy endpoint."
+    echo "Environment successfully created!"
+    echo ""
+    curl -fI http://hs.beholdthehurricane.com
+    curl -fI https://hs.beholdthehurricane.com
 # Uncomment below to add verification of terraform run. Excluding this as it adds additional action on the user's behalf, which is in violation of the stated task
 # -----
 #  else

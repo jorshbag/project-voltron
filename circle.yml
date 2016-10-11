@@ -19,3 +19,4 @@ deployment:
       - ./packer validate assets/packer/ubuntu/16.04.json
       - ./terraform get assets/terraform/hs
       - ./terraform plan -var 'aws_credential_profile=default' -var 'nginx_ami=ami-30682027' -var 'haproxy_ami=ami-74551d63' assets/terraform/hs
+      - curl -fi https://hs.beholdthehurricane.com
