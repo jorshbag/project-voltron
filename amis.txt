@@ -1,2 +1,0 @@
-us-east-1:ami-eb8bc0fc
-us-east-1:ami-108bc007

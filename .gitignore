@@ -10,5 +10,6 @@ tmp
 Packer-*/
 .DS_Store
 .packer.d
+amis.txt
 
 status

@@ -18,6 +18,4 @@ variable "dmz_subnets" {
   type = "list"
 }
 
-variable "cloudflare_ip_range" {}
-
 variable "haproxy_ami" {}

@@ -72,14 +72,24 @@ else
       echo "Found Cloudflare Credentials.  Updating Cloudflare Endpoint for hs.beholdthehurricane.com with new HAProxy Endpoint"
       update_cloudflare $CLOUDFLARE_USER $CLOUDFLARE_TOKEN $HAPROXY_PUBLIC_IP
       echo ""
-      echo "Waiting 30 seconds for Cloudflare to update and confirming access."
-      sleep 30
+      echo "Waiting 45 seconds for Cloudflare to update and confirming access."
+      sleep 45
       curl -fi https://hs.beholdthehurricane.com
     fi
     echo ""
-    echo "Environment successfully created!"
+    echo "Environment successfully created! Wawiting 45 seconds and confirming access"
+    echo ""
+    echo ""
+    sleep 45
+    echo "Confirming HTTP Redirect Access"
+    echo ""
     echo ""
     curl -fI http://$HAPROXY_PUBLIC_IP
+    echo ""
+    echo ""
+    echo "Confirming HTTPS access"
+    echo ""
+    echo ""
     curl -fI https://$HAPROXY_PUBLIC_IP
 # Uncomment below to add verification of terraform run. Excluding this as it adds additional action on the user's behalf, which is in violation of the stated task
 # -----
