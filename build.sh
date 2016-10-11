@@ -51,8 +51,11 @@ else
   echo "HAproxy AMI ID: $HAPROXY_AMI"
   get_nginx_ami
   echo "Nginx AMI ID: $NGINX_AMI"
-  read -r -p "Script is ready to execute Terraform commands -- This is POTENTIALLY DESTRUCTIVE -- Are you sure? [y/N] " response
-  if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]; then
+# Uncomment below to add verification of terraform run. Excluding this as it adds additional action on the user's behalf, which is in violation of the stated task
+# -----
+#  read -r -p "Script is ready to execute Terraform commands -- This is POTENTIALLY DESTRUCTIVE -- Are you sure? [y/N] " response
+#  if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]; then
+# -----
     echo "Beginning Phase 2: Deploying AWS Instances with created AMIs..."
     terraform_setup
     terraform_run $NGINX_AMI $HAPROXY_AMI
@@ -64,16 +67,19 @@ else
       echo "Found Cloudflare Credentials.  Updating Cloudflare Endpoint for hs.beholdthehurricane.com with new HAProxy Endpoint"
       update_cloudflare $CLOUDFLARE_USER $CLOUDFLARE_TOKEN $HAPROXY_PUBLIC_IP
       echo ""
-      echo "Waiting 10 seconds for Cloudflare to update and confirming access."
-      sleep 10
+      echo "Waiting 30 seconds for Cloudflare to update and confirming access."
+      sleep 30
       curl -fi https://hs.beholdthehurricane.com
     fi
     echo ""
-    echo "Environment successfully created."
-  else
-    echo "Did not recieve confirmation. Aborting terraform run."
-    exit 1
-  fi
+    echo "Environment successfully created. Please manually update your DNS to point to the new HAproxy endpoint."
+# Uncomment below to add verification of terraform run. Excluding this as it adds additional action on the user's behalf, which is in violation of the stated task
+# -----
+#  else
+#    echo "Did not recieve confirmation. Aborting terraform run."
+#    exit 1
+#  fi
+# -----
 fi
 cd $GIT_HOME
 exit 0
