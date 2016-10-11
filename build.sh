@@ -3,7 +3,6 @@ set -e
 
 PACKER_BIN=$(which packer)
 TERRAFORM_BIN=$(which terraform)
-HOME=$(pwd)
 
 function packer_build () {
   AWS_PROFILE=helpscout-demo packer build -machine-readable assets/packer/ubuntu/16.04.json | awk -F, '$0 ~/artifact,0,id/ {print $6}' | sed 's/%!(PACKER_COMMA)/\n/g' > amis.txt
@@ -39,8 +38,8 @@ function get_haproxy_public_ip () {
   HAPROXY_PUBLIC_IP=$(terraform show | grep public_ip | head -1 | awk -F= '{print $2}' | sed 's/^[ \t]*//;s/[ \t]*$//')
 }
 
-#echo "Beginning Phase 1: Creating AMI Assets..."
-#packer_build
+echo "Beginning Phase 1: Creating AMI Assets..."
+packer_build
 echo "Phase 1 completed"
 get_haproxy_ami
 echo "HAproxy AMI ID: $HAPROXY_AMI"
@@ -59,7 +58,9 @@ if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]; then
     echo "Found Cloudflare Credentials.  Updating Cloudflare Endpoint for hs.beholdthehurricane.com with new HAProxy Endpoint"
     update_cloudflare $CLOUDFLARE_USER $CLOUDFLARE_TOKEN $HAPROXY_PUBLIC_IP
   fi
+  echo ""
   echo "Environment successfully created.  Confirming access to haproxy through Cloudlare"
+  sleep 10
   curl -i https://hs.beholdthehurricane.com
 else
   echo "Did not recieve confirmation. Aborting terraform run."
