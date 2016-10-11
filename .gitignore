@@ -9,8 +9,6 @@ packer_cache
 tmp
 Packer-*/
 .DS_Store
-*/amis.txt
-amis.txt
 .packer.d
 
 status

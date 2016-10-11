@@ -41,5 +41,4 @@ module "haproxy" {
   haproxy_ami         = "${var.haproxy_ami}"
   dmz_subnets         = ["${module.network.dmz_subnets}"]
   vpc_id              = "${module.network.vpc_id}"
-  cloudflare_ip_range = "${var.cloudflare_ip_range}"
 }

@@ -79,8 +79,8 @@ else
     echo ""
     echo "Environment successfully created!"
     echo ""
-    curl -fI http://hs.beholdthehurricane.com
-    curl -fI https://hs.beholdthehurricane.com
+    curl -fI http://$HAPROXY_PUBLIC_IP
+    curl -fI https://$HAPROXY_PUBLIC_IP
 # Uncomment below to add verification of terraform run. Excluding this as it adds additional action on the user's behalf, which is in violation of the stated task
 # -----
 #  else

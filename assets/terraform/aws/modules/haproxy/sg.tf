@@ -11,7 +11,7 @@ resource "aws_security_group_rule" "public_http_sg_443" {
   protocol          = "tcp"
   from_port         = 443
   to_port           = 443
-  cidr_blocks       = ["${split(",", var.cloudflare_ip_range)}"]
+  cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = "${module.public_http_sg.id}"
 }
 
@@ -20,6 +20,6 @@ resource "aws_security_group_rule" "public_http_sg_80" {
   protocol          = "tcp"
   from_port         = 80
   to_port           = 80
-  cidr_blocks       = ["${split(",", var.cloudflare_ip_range)}"]
+  cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = "${module.public_http_sg.id}"
 }
