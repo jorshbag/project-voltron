@@ -39,8 +39,8 @@ function get_haproxy_public_ip () {
   HAPROXY_PUBLIC_IP=$(terraform show | grep public_ip | head -1 | awk -F= '{print $2}' | sed 's/^[ \t]*//;s/[ \t]*$//')
 }
 
-echo "Beginning Phase 1: Creating AMI Assets..."
-packer_build
+#echo "Beginning Phase 1: Creating AMI Assets..."
+#packer_build
 echo "Phase 1 completed"
 get_haproxy_ami
 echo "HAproxy AMI ID: $HAPROXY_AMI"
