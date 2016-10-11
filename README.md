@@ -5,6 +5,8 @@ Project voltron is a combination of Packer, Nginx, Terraform, and HAproxy to pro
 
 This simple project is meant to display the skills necessary to perform as an Infrastructure Autoamation Engineer.
 
+Deliverables include a working haproxy and nginx cluster, aws VPC, and all security groups for full HTTPS access to the deployment.
+
 ## Requirements
 * Homebrew (for Mac users)
   * Please see http://brew.sh to install
